@@ -6,3 +6,6 @@ yarn.lock
 .vscode
 deploy.sh
 *.log
+
+server.cert
+server.key

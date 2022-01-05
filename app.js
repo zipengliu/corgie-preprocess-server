@@ -2,6 +2,7 @@ import crypto from "crypto";
 import fs from "fs";
 import { writeFile, readFile } from "fs/promises";
 import express from "express";
+import https from "https";
 import multer from "multer";
 import morgan from "morgan";
 // import path from 'path';
@@ -14,7 +15,7 @@ const app = express();
 var accessLogStream = fs.createWriteStream("access.log", { flags: "a" });
 app.use(morgan("combined", { stream: accessLogStream }));
 
-const corsOri = ["http://localhost:3000", "http://zipengliu.github.io"];
+const corsOri = ["http://localhost:3000", "https://zipengliu.github.io"];
 app.use(cors({ origin: corsOri }));
 app.use("/data", express.static("data"));
 const port = 8787;
@@ -86,6 +87,14 @@ app.get("/status", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`CorGIE server listening at http://localhost:${port}`);
-});
+https
+    .createServer(
+        {
+            key: fs.readFileSync("server.key"),
+            cert: fs.readFileSync("server.cert"),
+        },
+        app
+    )
+    .listen(port, () => {
+        console.log(`CorGIE server listening at ${port}`);
+    });
