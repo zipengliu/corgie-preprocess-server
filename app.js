@@ -2,11 +2,10 @@ import crypto from "crypto";
 import fs from "fs";
 import { writeFile, readFile } from "fs/promises";
 import express from "express";
-import https from "https";
 import multer from "multer";
 import morgan from "morgan";
 // import path from 'path';
-import cors from "cors";
+// import cors from "cors";
 import moment from "moment";
 import preprocess from "./preprocess.mjs";
 
@@ -15,13 +14,14 @@ const app = express();
 var accessLogStream = fs.createWriteStream("access.log", { flags: "a" });
 app.use(morgan("combined", { stream: accessLogStream }));
 
-const corsOri = ["http://localhost:3000", "https://zipengliu.github.io"];
-app.use(cors({ origin: corsOri }));
-app.use("/data", express.static("data"));
+// const corsOri = ["http://localhost:3000"];
+// app.use(cors({ origin: corsOri }));
+// app.use("/data", express.static("data"));
 const port = 8787;
 
 // Directory for all user datasets
-const dataPath = "./data/";
+const dataPath = "/www/data/";
+// const dataPath = "./data/";
 // const statusCode = {
 //     0: "Processing files",
 //     1: "Ready to go",
@@ -81,20 +81,12 @@ app.post("/upload", generateID, uploader.fields(fileFields), (req, res) => {
     res.send(req.datasetId);
 });
 
-app.get("/status", (req, res) => {
-    readFile(dataPath + req.query.id + "/status").then((s) => {
-        res.send(s);
-    });
-});
+// app.get("/status", (req, res) => {
+//     readFile(dataPath + req.query.id + "/status").then((s) => {
+//         res.send(s);
+//     });
+// });
 
-https
-    .createServer(
-        {
-            key: fs.readFileSync("server.key"),
-            cert: fs.readFileSync("server.cert"),
-        },
-        app
-    )
-    .listen(port, () => {
-        console.log(`CorGIE server listening at ${port}`);
-    });
+app.listen(port, () => {
+    console.log(`CorGIE server listening at ${port}`);
+});
